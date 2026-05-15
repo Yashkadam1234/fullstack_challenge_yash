@@ -3,6 +3,17 @@ import { createServerSupabaseClient } from "@/lib/supabase";
 import { nanoid } from "nanoid";
 
 /* =========================
+   TYPES
+========================= */
+type NoteTag = {
+  tag_id: string;
+};
+
+type NoteWithTags = {
+  note_tags?: NoteTag[];
+};
+
+/* =========================
    GET NOTES
 ========================= */
 export async function GET(req: NextRequest) {
@@ -27,8 +38,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("notes")
-    .select(
-      `
+    .select(`
       *,
       note_tags (
         tag_id,
@@ -38,8 +48,7 @@ export async function GET(req: NextRequest) {
           color
         )
       )
-    `
-    )
+    `)
     .eq("user_id", session.user.id)
     .order("updated_at", { ascending: false })
     .range(offset, offset + limit - 1);
@@ -64,11 +73,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  let notes = data ?? [];
+  let notes = (data ?? []) as NoteWithTags[];
 
   if (tag) {
-    notes = notes.filter((note: any) =>
-      note.note_tags?.some((nt: any) => nt.tag_id === tag)
+    notes = notes.filter((note) =>
+      note.note_tags?.some((nt) => nt.tag_id === tag)
     );
   }
 

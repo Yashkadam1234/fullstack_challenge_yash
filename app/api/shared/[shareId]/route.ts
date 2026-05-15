@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase";
 
-/* =========================
-   GET PUBLIC NOTE
-========================= */
+type Tag = {
+  id: string;
+  name: string;
+  color: string | null;
+};
+
+type RawNoteTag = {
+  tags: Tag | Tag[] | null;
+};
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ shareId: string }> }
@@ -14,8 +21,7 @@ export async function GET(
 
   const { data, error } = await supabase
     .from("notes")
-    .select(
-      `
+    .select(`
       id,
       title,
       content,
@@ -30,28 +36,36 @@ export async function GET(
           color
         )
       )
-    `
-    )
+    `)
     .eq("share_id", shareId)
     .eq("is_public", true)
     .single();
 
   if (error || !data) {
-    return NextResponse.json(
-      { error: "Not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const publicNote = {
-    id: data.id,
-    title: data.title,
-    content: data.content,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    tags: data.note_tags?.map((nt: any) => nt.tags) ?? [],
-    share_id: data.share_id,
-  };
+  const rawTags = (data.note_tags ?? []) as RawNoteTag[];
 
-  return NextResponse.json({ data: publicNote });
+  const tags: Tag[] = rawTags
+    .flatMap((nt) => nt.tags)
+    .filter(Boolean)
+    .map((t) => {
+      // ensure it's not array form
+      if (Array.isArray(t)) return t[0];
+      return t;
+    });
+
+  return NextResponse.json({
+    data: {
+      id: data.id,
+      title: data.title,
+      content: data.content,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      is_public: data.is_public,
+      share_id: data.share_id,
+      tags,
+    },
+  });
 }
