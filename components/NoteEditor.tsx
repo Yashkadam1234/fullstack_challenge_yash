@@ -39,8 +39,6 @@ export default function NoteEditor({ note }: { note: Note }) {
   const [saving, setSaving] = useState(false);
   const [ai, setAi] = useState<AIResult | null>(null);
 
-  const [isPublic, setIsPublic] = useState(note.is_public);
-
   /* =========================
      AUTO SAVE (debounced)
   ========================= */
@@ -58,7 +56,7 @@ export default function NoteEditor({ note }: { note: Note }) {
     }, 1500);
 
     return () => clearTimeout(timeout);
-  }, [title, content]);
+  }, [title, content, note.id]);
 
   /* =========================
      TAGS
@@ -95,6 +93,7 @@ export default function NoteEditor({ note }: { note: Note }) {
   const archiveNote = async () => {
     await fetch(`/api/notes/${note.id}`, {
       method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ is_archived: true }),
     });
 
@@ -110,9 +109,8 @@ export default function NoteEditor({ note }: { note: Note }) {
     });
 
     const data = await res.json();
-    setIsPublic(data.data.is_public);
 
-    if (data.data.share_id) {
+    if (data.data?.share_id) {
       navigator.clipboard.writeText(
         `${window.location.origin}/shared/${data.data.share_id}`
       );
