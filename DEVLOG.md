@@ -1,28 +1,37 @@
-Hours worked: 4
+## Day 1 — 2026-05-14
 
-What I did: Set up the Peblo Notes foundation with Next.js 14, TypeScript strict mode, Tailwind, and shadcn/ui. Added core TypeScript interfaces, created the Supabase database schema with RLS policies, built login/signup auth pages, added protected routes middleware, and seeded the database with sample notes for testing.
+**Hours worked:** 4
 
-What I learned: Spent time understanding Supabase RLS and how auth/session handling changes when using @supabase/ssr. Also realised a proper tags + note_tags relationship is much cleaner than storing tags directly in notes.
+**What I did:**
+Set up the Peblo Notes foundation with Next.js 16, TypeScript strict mode, and Tailwind. Structured the initial project architecture including App Router layout, API folder design, and component separation. Set up Supabase integration with SSR client handling using `@supabase/ssr`, created the database schema with RLS policies, and implemented authentication flow (login/signup + session handling). Added protected route logic through server-side session checks and initialized sample notes structure for testing relational queries (notes + tags via join tables).
 
-Blockers / what I'm stuck on: Had some setup friction while switching auth packages and making sure middleware + auth flow match the App Router setup.
+**What worked well:**
+Supabase RLS worked effectively for isolating user data without needing complex backend logic. The decision to use relational tagging (notes ↔ note_tags ↔ tags) made the data model flexible and scalable from the start.
 
-Plan for tomorrow: Start building the dashboard, notes CRUD flow, and AI integration structure with Claude Haiku.
+**What I learned:**
+Gained deeper understanding of Supabase SSR authentication flow and how it differs from client-only auth. Learned that Next.js App Router enforces stricter server/client boundaries, especially when handling cookies and sessions. Also understood why normalized tagging systems are better than embedding arrays directly in notes.
+
+**Blockers / challenges:**
+Initial friction with Supabase auth setup while switching to `@supabase/ssr`. Middleware vs App Router protection required rethinking the auth flow. Some confusion around cookie handling and server client initialization in Next.js 16.
+
+**Plan for tomorrow:**
+Start building the dashboard UI, implement full notes CRUD API layer, and design the AI integration pipeline (Gemini-powered note generation + summarization).
 
 ## Day 2 — 2026-05-15
 
 **Hours worked:** 5
 
 **What I did:**
-Built the core backend APIs for notes including CRUD operations, AI generation with Gemini 2.5 Flash, and public sharing support. Then built the main UI layer with NoteEditor and notes dashboard with search and filters.
+Built the core backend APIs for notes including CRUD operations, AI generation with Gemini 2.5 Flash, and public sharing support. Then built the main UI layer with NoteEditor and notes dashboard with search and filters. Integrated Supabase SSR authentication across server routes and ensured all note operations are user-scoped.
 
 **What worked well:**
-AI integration was smoother than expected once fallback logic was added. Supabase RLS made data isolation clean without extra code.
+AI integration worked smoothly once the generation pipeline and rate limiting were added. Supabase relational queries for tags worked well and kept data modeling clean. The NoteEditor auto-save flow felt responsive and stable after debounce tuning.
 
 **What broke / challenges:**
-Next.js 16 route handler typing changes caused multiple TS errors with params handling. Supabase SSR cookies also required adjustments.
+Next.js 16 introduced strict changes in App Router dynamic route params, which caused multiple TypeScript errors across API routes. Supabase SSR cookie handling also required correction for proper server client initialization. Additionally, strict ESLint rules exposed unsafe `any` usage in nested query mappings.
 
 **What I learned:**
-App Router is strict with async params now. Also learned how important it is to design API + UI together because the NoteEditor flow depends heavily on backend structure.
+Next.js App Router now enforces stricter typing for route handlers, especially around `params`. I also learned how fragile full-stack type safety can be when dealing with nested relational data from Supabase. Fixing CI issues required thinking in terms of both runtime correctness and type correctness simultaneously.
 
 **Next step:**
-Improve UI polish, add loading states, and connect AI output directly into editor preview with better UX feedback.
+Improve UI polish and UX feedback, add better loading states and skeletons, and enhance AI output integration inside the editor. Also plan to move rate limiting from in-memory storage to a persistent database solution for production readiness.
