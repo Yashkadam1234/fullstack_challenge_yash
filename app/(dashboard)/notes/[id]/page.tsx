@@ -22,7 +22,9 @@ export default async function NotePage({
       *,
       note_tags (
         tags (
-          name
+          id,
+          name,
+          color
         )
       )
     `
@@ -34,8 +36,17 @@ export default async function NotePage({
   if (!note) return notFound();
 
   const formatted = {
-    ...note,
-    tags: note.note_tags?.map((t: any) => t.tags) || [],
+    id: note.id,
+    title: note.title,
+    content: note.content,
+    tags: note.note_tags?.map((t: { tags: { id: string; name: string; color: string | null } }) => t.tags) || [],
+    category_id: note.category_id,
+    is_archived: note.is_archived,
+    is_public: note.is_public,
+    share_id: note.share_id,
+    ai_summary: note.ai_summary,
+    ai_action_items: note.ai_action_items,
+    suggested_title: note.suggested_title,
   };
 
   return <NoteEditor note={formatted} />;
