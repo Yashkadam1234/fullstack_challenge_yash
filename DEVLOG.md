@@ -31,7 +31,7 @@ AI integration worked smoothly once the generation pipeline and rate limiting we
 Next.js 16 introduced strict changes in App Router dynamic route params, which caused multiple TypeScript errors across API routes. Supabase SSR cookie handling also required correction for proper server client initialization. Additionally, strict ESLint rules exposed unsafe `any` usage in nested query mappings.
 
 **What I learned:**
-Next.js App Router now enforces stricter typing for route handlers, especially around `params`. I also learned how fragile full-stack type safety can be when dealing with nested relational data from Supabase. Fixing CI issues required thinking in terms of both runtime correctness and type correctness simultaneously.
+Next.js App Router now enforces stricter typing for route handlers, especially around `params`. I also learned how fragile full-stack type safety can  when dealing with nested relational data from Supabase. Fixing CI issues required thinking in terms of both runtime correctness and type correctness simultaneously.
 
 **Next step:**
 Improve UI polish and UX feedback, add better loading states and skeletons, and enhance AI output integration inside the editor. Also plan to move rate limiting from in-memory storage to a persistent database solution for production readiness.
