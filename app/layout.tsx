@@ -1,23 +1,22 @@
-// app/layout.tsx
-
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
-import { createServerClient } from "@/lib/supabase";
+import { createServerSupabaseClient } from "@/lib/supabase";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: "Peblo Notes — AI-powered workspace",
-  description: "Collaborative AI-powered notes workspace for productivity and learning.",
+  description:
+    "Collaborative AI-powered notes workspace for productivity and learning.",
 };
 
 export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const supabase = createServerClient();
+}) {
+  const supabase = await createServerSupabaseClient();
 
   const {
     data: { session },
@@ -28,9 +27,7 @@ export default async function RootLayout({
       <body
         className={`${GeistSans.className} min-h-screen bg-background text-foreground antialiased`}
       >
-        <Providers initialSession={session}>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
